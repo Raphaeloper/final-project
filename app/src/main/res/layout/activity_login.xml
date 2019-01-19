@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#7589c7"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     android:orientation="vertical"
     android:padding="32dp"
     tools:context=".LoginActivity">
@@ -15,7 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="75dp"
         android:text="Welcome"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:textSize="32sp" />
 
     <EditText
@@ -38,6 +37,8 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="Login"
+        android:layout_marginBottom="8dp"
+        android:background="#a6929699"
         android:textAllCaps="false" />
 
     <Button
@@ -45,6 +46,7 @@
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="Sign up"
+        android:background="#8f696b6b"
         android:textAllCaps="false" />
 
 </LinearLayout>
