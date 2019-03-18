@@ -25,41 +25,29 @@
         android:padding="16dp">
 
         <EditText
+            android:id="@+id/et_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="Full name" />
 
         <EditText
+            android:id="@+id/et_class"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:hint="Class" />
 
         <EditText
+            android:id="@+id/et_school"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="48dp"
             android:gravity="center"
             android:hint="School" />
 
-        <LinearLayout
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:layout_marginBottom="8dp">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Choose Image"
-            android:textAllCaps="false" />
-
-        <Button
+            android:id="@+id/btn_confirm"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -69,6 +57,7 @@
             android:textAllCaps="false" />
 
         <Button
+            android:id="@+id/btn_cancel"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:background="#80F44336"

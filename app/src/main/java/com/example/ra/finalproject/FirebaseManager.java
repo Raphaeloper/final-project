@@ -12,11 +12,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class FirebaseManager {
-    public static final FirebaseAuth auth = FirebaseAuth.getInstance();
-    ;
+    static final FirebaseAuth auth = FirebaseAuth.getInstance();
+
     private Context context;
 
-    public FirebaseManager(Context context) {
+    FirebaseManager(Context context) {
         this.context = context;
     }
 
@@ -24,7 +24,7 @@ public class FirebaseManager {
         return context;
     }
 
-    public void signUp(String email, String pass) {
+    void signUp(String email, String pass) {
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -37,7 +37,7 @@ public class FirebaseManager {
         });
     }
 
-    public void login(String email, String pass) {
+    void login(String email, String pass) {
         auth.signInWithEmailAndPassword(email, pass).addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {

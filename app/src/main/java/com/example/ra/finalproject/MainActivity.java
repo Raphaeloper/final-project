@@ -1,20 +1,44 @@
 package com.example.ra.finalproject;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     Button btnLogout, btnGrades, btnAbsence, btnExams;
     TextView tvName, tvClass, tvSchool, tvAvg, tvAbsTotal, tvExamTotal;
-    ImageView ivProfile;
-    DatabaseReference databaseReference;
+    final int UPDATE_INFO_REQUEST = 1234;
+    DatabaseReference userReference;
     String uid;
+    FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user == null) {
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                finish();
+            } else
+                Toast.makeText(MainActivity.this, "Not logged out", Toast.LENGTH_SHORT).show();
+        }
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,13 +53,84 @@ public class MainActivity extends AppCompatActivity {
         tvAvg = (TextView) findViewById(R.id.tv_avg);
         tvAbsTotal = (TextView) findViewById(R.id.tv_abs_total);
         tvExamTotal = (TextView) findViewById(R.id.tv_exam_total);
-        ivProfile = (ImageView) findViewById(R.id.iv_profile);
+
+        btnLogout.setOnClickListener(this);
+        btnGrades.setOnClickListener(this);
+        btnAbsence.setOnClickListener(this);
+        btnExams.setOnClickListener(this);
 
         uid = FirebaseManager.auth.getCurrentUser().getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference(uid);
+        userReference = FirebaseDatabase.getInstance().getReference("users/" + uid);
+        userReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Student s = dataSnapshot.getValue(Student.class);
+                if (s == null) {                                                                             // If the user is new, then make him update his info
+                    Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
+                    startActivityForResult(intent, UPDATE_INFO_REQUEST);
+                } else {                                                                                    // If the user exists, update his info on-screen
+                    userReference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            Student s = dataSnapshot.getValue(Student.class);
+                            tvName.setText(s.getName());
+                            tvClass.setText(s.getClassroom());
+                            tvSchool.setText(s.getSchool());
+                        }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                        }
+                    });
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseManager.auth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null)
+            FirebaseManager.auth.removeAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == UPDATE_INFO_REQUEST) {
+            userReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Student s = dataSnapshot.getValue(Student.class);
+                    tvName.setText(s.getName());
+                    tvClass.setText(s.getClassroom());
+                    tvSchool.setText(s.getSchool());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == btnLogout)
+            FirebaseManager.auth.signOut();
     }
 }
