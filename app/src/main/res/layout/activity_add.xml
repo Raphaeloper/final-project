@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".AddActivity">
+
+    <TextView
+        android:id="@+id/tv_title_screen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="32dp"
+        android:text="Add"
+        android:textSize="42sp" />
+
+    <EditText
+        android:id="@+id/et_title"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:hint="Title" />
+
+    <EditText
+        android:id="@+id/et_sub"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:hint="Subject" />
+
+    <EditText
+        android:id="@+id/et_date"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:hint="Date" />
+
+    <CheckBox
+        android:id="@+id/cb_approved_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Approved" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weight"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/sb_weight"
+            android:layout_width="200dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:max="100"
+            android:paddingTop="16dp" />
+
+        <TextView
+            android:id="@+id/tv_weight_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="0%" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_confirm_add"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Confirm"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btn_cancel_add"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:textAllCaps="false" />
+</LinearLayout>

@@ -3,6 +3,7 @@
     package="com.example.ra.finalproject">
 
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -10,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".WelcomeActivity"></activity>
+        <activity android:name=".AddActivity"></activity>
+        <activity android:name=".WelcomeActivity" />
         <activity android:name=".ListActivity" />
         <activity android:name=".LoginActivity">
             <intent-filter>

@@ -21,9 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    final int UPDATE_INFO_REQUEST = 1234;
     Button btnLogout, btnGrades, btnAbsence, btnExams;
     TextView tvName, tvClass, tvSchool, tvAvg, tvAbsTotal, tvExamTotal;
-    final int UPDATE_INFO_REQUEST = 1234;
     DatabaseReference userReference;
     String uid;
     FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Student s = dataSnapshot.getValue(Student.class);
-                if (s == null) {                                                                             // If the user is new, then make him update his info
+                if (s == null) {                                                                             // If user is new, make him update his info
                     Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
                     startActivityForResult(intent, UPDATE_INFO_REQUEST);
-                } else {                                                                                    // If the user exists, update his info on-screen
+                } else {                                                                                    // If user exists, display his info on-screen
                     userReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -130,7 +130,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        Intent intent = new Intent(MainActivity.this, ListActivity.class);
+        Toast.makeText(MainActivity.this, "Loading...", Toast.LENGTH_SHORT).show();
         if (v == btnLogout)
             FirebaseManager.auth.signOut();
+        else if (v == btnGrades) {
+            intent.putExtra("topic", "Grades");
+            startActivity(intent);
+        } else if (v == btnAbsence) {
+            intent.putExtra("topic", "Absence");
+            startActivity(intent);
+        } else if (v == btnExams) {
+            intent.putExtra("topic", "Exams");
+            startActivity(intent);
+        }
     }
 }

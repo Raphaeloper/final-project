@@ -10,9 +10,10 @@
     tools:context=".ListActivity">
 
     <TextView
+        android:id="@+id/tv_topic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#802196F3"
+        android:background="#A76A61"
         android:gravity="center"
         android:padding="16dp"
         android:text="Topic"
@@ -20,10 +21,11 @@
         android:textColor="@android:color/white" />
 
     <TextView
+        android:id="@+id/tv_total"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:background="#BF2196F3"
+        android:background="#BFA0ADB8"
         android:gravity="center"
         android:padding="8dp"
         android:text="Average/Total:"
@@ -31,8 +33,18 @@
         android:textColor="@android:color/black" />
 
     <ListView
+        android:id="@+id/lv_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_marginBottom="16dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:text="Add"
+        android:textAllCaps="false" />
 
 
 </LinearLayout>

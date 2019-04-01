@@ -17,6 +17,14 @@ public class Grade {
         this.num = num;
     }
 
+    public double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
+
     public String getTitle() {
         return title;
     }
