@@ -8,10 +8,21 @@ public class Absence {
     private String date;
     private boolean approved;
 
+    public Absence() {
+    }
+
     public Absence(String subject, String date, boolean approved) {
         this.subject = subject;
         this.date = date;
         this.approved = approved;
+    }
+
+    public String getAid() {
+        return aid;
+    }
+
+    public void setAid(String aid) {
+        this.aid = aid;
     }
 
     public String getSubject() {

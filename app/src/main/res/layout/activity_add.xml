@@ -48,6 +48,7 @@
         android:text="Approved" />
 
     <TextView
+        android:id="@+id/tv_weight"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Weight"
@@ -61,7 +62,7 @@
 
         <SeekBar
             android:id="@+id/sb_weight"
-            android:layout_width="200dp"
+            android:layout_width="300dp"
             android:layout_height="match_parent"
             android:layout_marginBottom="16dp"
             android:max="100"
@@ -69,6 +70,35 @@
 
         <TextView
             android:id="@+id/tv_weight_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="0%" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_mark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mark"
+        android:textSize="24sp" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="horizontal">
+
+        <SeekBar
+            android:id="@+id/sb_mark"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="16dp"
+            android:max="100"
+            android:paddingTop="16dp" />
+
+        <TextView
+            android:id="@+id/tv_mark_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="16dp"

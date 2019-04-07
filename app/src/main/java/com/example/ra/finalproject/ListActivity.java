@@ -6,7 +6,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -42,9 +45,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         switch (topic) {
             case "Absence":
                 dbRef = dbRef.child("absence").child(FirebaseManager.auth.getUid());
-                retriveData();
-                AbsenceAdapter absenceAdapter = new AbsenceAdapter(this, 0, topicList);
-                lvList.setAdapter(absenceAdapter);
+                retrieveData();
                 break;
             case "Exams":
                 dbRef = dbRef.child("exams");
@@ -54,14 +55,20 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
 
+        if (topicList == null) {
+            topicList = new ArrayList();
+            topicList.add("No data");
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, topicList);
+            lvList.setAdapter(arrayAdapter);
+        }
+
 
     }
 
-    public void retriveData() {
+    public void retrieveData() {                      //will return false if no data was retrieved
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.d("this", "Got here");
                 topicList = new ArrayList();
                 for (DataSnapshot data : dataSnapshot.getChildren()) {
                     switch (topic) {
@@ -79,17 +86,33 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                             break;
                     }
                 }
+                setList(topic);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
 
+    public void setList(String topic) {
+        if (!topicList.get(0).getClass().equals(String.class)) {
+            switch (topic) {
+                case "Absence":
+                    AbsenceAdapter absenceAdapter = new AbsenceAdapter(this, 0, topicList);
+                    lvList.setAdapter(absenceAdapter);
+                    break;
+            }
+        }
+    }
+
     @Override
     public void onClick(View v) {
-
+        if (v == btnAdd) {
+            Intent intent = new Intent(ListActivity.this, AddActivity.class);
+            intent.putExtra("topic", topic);
+            startActivity(intent);
+        }
     }
+
 }

@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:gravity="center_horizontal"
+    android:orientation="vertical"
     android:padding="16dp"
     tools:context=".ListActivity">
 
@@ -32,12 +32,17 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@android:color/black" />
 
-    <ListView
-        android:id="@+id/lv_list"
-        android:layout_width="match_parent"
+    <ScrollView
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:layout_marginBottom="16dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <ListView
+            android:id="@+id/lv_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </ScrollView>
 
     <Button
         android:id="@+id/btn_add"
