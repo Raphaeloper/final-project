@@ -3,6 +3,7 @@ package com.example.ra.finalproject;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -13,6 +14,8 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
 
 public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener {
     TextView tvWeight, tvWeightAdd, tvMark, tvMarkAdd;
@@ -42,7 +45,9 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         tvMarkAdd = (TextView) findViewById(R.id.tv_mark_add);
         btnConfirmAdd = (Button) findViewById(R.id.btn_confirm_add);
         btnCancelAdd = (Button) findViewById(R.id.btn_cancel_add);
+        Calendar calendar = Calendar.getInstance();
 
+        etDate.setOnClickListener(this);
         btnConfirmAdd.setOnClickListener(this);
         btnCancelAdd.setOnClickListener(this);
         sbWeight.setOnSeekBarChangeListener(this);
@@ -112,16 +117,10 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
     }
 
     @Override
-    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (seekBar == sbWeight)
-            tvWeightAdd.setText(progress + "%");
-        else if (seekBar == sbMark)
-            tvMarkAdd.setText(progress + "%");
-    }
-
-    @Override
     public void onClick(View v) {
-        if (v == btnConfirmAdd) {
+        if (v == etDate) {
+
+        } else if (v == btnConfirmAdd) {
             if (checkAll()) {
                 switch (topic) {
                     case "Absence":
@@ -129,6 +128,18 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                         topicRef = dbRef.push();
                         a.setAid(topicRef.getKey());
                         topicRef.setValue(a);
+                        break;
+                    case "Exams":
+                        Exam e = new Exam(etTitle.getText().toString(), etSub.getText().toString(), etDate.getText().toString(), sbWeight.getProgress());
+                        topicRef = dbRef.push();
+                        e.setEid(topicRef.getKey());
+                        topicRef.setValue(e);
+                        break;
+                    case "Grades":
+                        Grade g = new Grade(etTitle.getText().toString(), etSub.getText().toString(), etDate.getText().toString(), sbWeight.getProgress(), sbMark.getProgress());
+                        topicRef = dbRef.push();
+                        g.setGid(topicRef.getKey());
+                        topicRef.setValue(g);
                         break;
                 }
                 finish();
@@ -145,6 +156,14 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                 (etSub.isActivated() && etSub.getText().length() == 0) ||
                 (etDate.isActivated() && etDate.getText().length() == 0) ||
                 (sbWeight.isActivated() && (sbWeight.getProgress() == 0 || sbWeight.getProgress() == 100)));
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (seekBar == sbWeight)
+            tvWeightAdd.setText(progress + "%");
+        else if (seekBar == sbMark)
+            tvMarkAdd.setText(progress + "%");
     }
 
     @Override

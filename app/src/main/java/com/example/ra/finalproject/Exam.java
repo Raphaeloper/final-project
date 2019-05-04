@@ -6,13 +6,20 @@ public class Exam {
     private String eid;
     private String title, subject;
     private String date;
-    private double weight;
+    private int weight;
 
-    public Exam(String title, String subject, String date, double weight) {
+    public Exam(){}
+
+    public Exam(String title, String subject, String date, int weight) {
         this.title = title;
         this.subject = subject;
         this.date = date;
+        this.weight = weight;
     }
+
+    public String getEid() { return eid; }
+
+    public void setEid(String eid) { this.eid = eid; }
 
     public String getTitle() {
         return title;
@@ -38,11 +45,11 @@ public class Exam {
         this.date = date;
     }
 
-    public double getWeight() {
+    public int getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(int weight) {
         this.weight = weight;
     }
 }

@@ -8,8 +8,7 @@ public class Absence {
     private String date;
     private boolean approved;
 
-    public Absence() {
-    }
+    public Absence() {}
 
     public Absence(String subject, String date, boolean approved) {
         this.subject = subject;

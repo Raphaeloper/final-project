@@ -13,7 +13,7 @@
         android:id="@+id/tv_topic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#A76A61"
+        android:background="#8B8989"
         android:gravity="center"
         android:padding="16dp"
         android:text="Topic"
@@ -32,19 +32,14 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="@android:color/black" />
 
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
+    <ListView
+        android:id="@+id/lv_list"
         android:layout_weight="1"
-        android:fillViewport="true">
-
-        <ListView
-            android:id="@+id/lv_list"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </ScrollView>
+        android:layout_width="match_parent"
+        android:layout_height="0dp" />
 
     <Button
+        android:layout_margin="16dp"
         android:id="@+id/btn_add"
         android:layout_width="150dp"
         android:layout_height="wrap_content"

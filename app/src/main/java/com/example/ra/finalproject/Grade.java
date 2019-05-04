@@ -6,10 +6,12 @@ public class Grade {
     private String gid;
     private String title, subject;
     private String date;
-    private double weight;
+    private int weight;
     private int num;
 
-    public Grade(String title, String subject, String date, double weight, int num) {
+    public Grade() {}
+
+    public Grade(String title, String subject, String date, int weight, int num) {
         this.title = title;
         this.subject = subject;
         this.date = date;
@@ -17,11 +19,15 @@ public class Grade {
         this.num = num;
     }
 
-    public double getWeight() {
+    public String getGid() { return gid; }
+
+    public void setGid(String gid) { this.gid = gid; }
+
+    public int getWeight() {
         return weight;
     }
 
-    public void setWeight(double weight) {
+    public void setWeight(int weight) {
         this.weight = weight;
     }
 

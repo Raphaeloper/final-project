@@ -48,10 +48,12 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 retrieveData();
                 break;
             case "Exams":
-                dbRef = dbRef.child("exams");
+                dbRef = dbRef.child("exams").child(FirebaseManager.auth.getUid());
+                retrieveData();
                 break;
             case "Grades":
-                dbRef = dbRef.child("grades");
+                dbRef = dbRef.child("grades").child(FirebaseManager.auth.getUid());
+                retrieveData();
                 break;
         }
 
@@ -96,11 +98,19 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setList(String topic) {
-        if (!topicList.get(0).getClass().equals(String.class)) {
+        if (topicList.size() != 0 && !topicList.get(0).getClass().equals(String.class)) {
             switch (topic) {
                 case "Absence":
                     AbsenceAdapter absenceAdapter = new AbsenceAdapter(this, 0, topicList);
                     lvList.setAdapter(absenceAdapter);
+                    break;
+                case "Exams":
+                    ExamAdapter examAdapter = new ExamAdapter(this, 0, topicList);
+                    lvList.setAdapter(examAdapter);
+                    break;
+                case "Grades":
+                    GradeAdapter gradeAdapter = new GradeAdapter(this, 0, topicList);
+                    lvList.setAdapter(gradeAdapter);
                     break;
             }
         }
