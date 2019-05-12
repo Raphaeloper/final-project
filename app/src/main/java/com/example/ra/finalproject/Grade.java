@@ -1,17 +1,15 @@
 package com.example.ra.finalproject;
 
-import java.util.Date;
-
 public class Grade {
     private String gid;
     private String title, subject;
-    private String date;
+    private long date;
     private int weight;
     private int num;
 
     public Grade() {}
 
-    public Grade(String title, String subject, String date, int weight, int num) {
+    public Grade(String title, String subject, long date, int weight, int num) {
         this.title = title;
         this.subject = subject;
         this.date = date;
@@ -47,11 +45,11 @@ public class Grade {
         this.subject = subject;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
 

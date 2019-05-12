@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class GradeAdapter extends ArrayAdapter {
@@ -37,7 +38,13 @@ public class GradeAdapter extends ArrayAdapter {
         tvSubGr.setText(t.getSubject());
         tvWeightGr.setText(t.getWeight() + "%");
         tvMarkGr.setText(t.getNum()+"");
-        tvDateGr.setText(t.getDate());
+        tvDateGr.setText(getDate(t.getDate()));
         return view;
+    }
+
+    String getDate(long date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date);
+        return calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
     }
 }

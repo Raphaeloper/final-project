@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class AbsenceAdapter extends ArrayAdapter<Absence> {
@@ -33,8 +34,14 @@ public class AbsenceAdapter extends ArrayAdapter<Absence> {
         CheckBox cbApproved = (CheckBox) view.findViewById(R.id.cb_approved);
         Absence t = obj.get(position);
         tvSubAb.setText(t.getSubject());
-        tvDateAb.setText(t.getDate());
+        tvDateAb.setText(getDate(t.getDate()));
         cbApproved.setChecked(t.isApproved());
         return view;
+    }
+
+    String getDate(long date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(date);
+        return calendar.get(Calendar.DAY_OF_MONTH) + "/" + (calendar.get(Calendar.MONTH) + 1) + "/" + calendar.get(Calendar.YEAR);
     }
 }

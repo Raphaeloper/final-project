@@ -1,16 +1,14 @@
 package com.example.ra.finalproject;
 
-import java.util.Date;
-
 public class Absence {
     private String aid;
     private String subject;
-    private String date;
+    private long date;
     private boolean approved;
 
     public Absence() {}
 
-    public Absence(String subject, String date, boolean approved) {
+    public Absence(String subject, long date, boolean approved) {
         this.subject = subject;
         this.date = date;
         this.approved = approved;
@@ -32,11 +30,11 @@ public class Absence {
         this.subject = subject;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
 

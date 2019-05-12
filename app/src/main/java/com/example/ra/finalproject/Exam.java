@@ -1,16 +1,14 @@
 package com.example.ra.finalproject;
 
-import java.util.Date;
-
 public class Exam {
     private String eid;
     private String title, subject;
-    private String date;
+    private long date;
     private int weight;
 
     public Exam(){}
 
-    public Exam(String title, String subject, String date, int weight) {
+    public Exam(String title, String subject, long date, int weight) {
         this.title = title;
         this.subject = subject;
         this.date = date;
@@ -37,11 +35,11 @@ public class Exam {
         this.subject = subject;
     }
 
-    public String getDate() {
+    public long getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public void setDate(long date) {
         this.date = date;
     }
 
