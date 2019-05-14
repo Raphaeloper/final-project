@@ -69,17 +69,24 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         sbWeight.setOnSeekBarChangeListener(this);
         sbMark.setOnSeekBarChangeListener(this);
 
-        hideAll(); //cleans the screen for easier customization
+        hideAll();
 
-        setMode(topic); //customizes the screen for the selected topic
+        setMode(topic);
         dbRef = FirebaseDatabase.getInstance().getReference().child(directory).child(FirebaseManager.auth.getUid());
     }
 
+    /**
+     * Make a certain view not interactive
+     * @param v The view that needs to be disabled
+     */
     public void disableView(View v) {
         v.setActivated(false);
         v.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * Clear the screen for easier screen setup
+     */
     public void hideAll() {
         disableView(etTitle);
         disableView(etSub);
@@ -93,11 +100,19 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         disableView(tvMarkAdd);
     }
 
+    /**
+     * Make a certain view interactive
+     * @param v The view that needs to be enabled
+     */
     public void enableView(View v) {
         v.setActivated(true);
         v.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Set up the screen in a way that shows only the relevant views for that topic
+     * @param topic The topic that the screen needs to show
+     */
     public void setMode(String topic) {
         switch (topic) {
             case "Absence":
@@ -126,6 +141,11 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                 enableView(sbMark);
                 enableView(tvMarkAdd);
                 directory = "grades";
+                break;
+            case "Subjects":
+                enableView(etTitle);
+                etTitle.setHint("Subject");
+                directory = "subjects";
                 break;
         }
     }
@@ -156,6 +176,12 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                         g.setGid(topicRef.getKey());
                         topicRef.setValue(g);
                         break;
+                    case "Subjects":
+                        Subject s = new Subject(etTitle.getText().toString());
+                        topicRef = dbRef.push();
+                        s.setSid(topicRef.getKey());
+                        topicRef.setValue(s);
+                        break;
                 }
                 finish();
             } else {
@@ -166,6 +192,10 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         }
     }
 
+    /**
+     * Check if the data input was valid
+     * @return Data input is valid
+     */
     public boolean checkAll() {
         return !((etTitle.isActivated() && etTitle.getText().length() == 0) ||
                 (etSub.isActivated() && etSub.getText().length() == 0) ||
@@ -173,6 +203,12 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                 (sbWeight.isActivated() && (sbWeight.getProgress() == 0 || sbWeight.getProgress() == 100)));
     }
 
+    /**
+     * Modify the appropriate TextView when the value on the SeekBar is modified
+     * @param seekBar The SeekBar whose value is modified
+     * @param progress Current progress
+     * @param fromUser Was the progress changed by the user?
+     */
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         if (seekBar == sbWeight)

@@ -74,6 +74,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             Toast.makeText(LoginActivity.this, "All fields must be filled out in order to continue", Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * Check if the input is valid
+     * @param email The text that is typed in the email box
+     * @param pass The text that is typed in the password box
+     * @return Input is valid
+     */
     public boolean legit(String email, String pass) {
         return email.contains("@") && email.contains(".") && pass.length() > 7;
     }

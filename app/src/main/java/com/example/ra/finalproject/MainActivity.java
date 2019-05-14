@@ -22,7 +22,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     final int UPDATE_INFO_REQUEST = 1234;
-    Button btnLogout, btnGrades, btnAbsence, btnExams;
+    Button btnLogout, btnGrades, btnAbsence, btnExams, btnSubjects;
     TextView tvName, tvClass, tvSchool, tvAvg, tvAbsTotal, tvExamTotal;
     DatabaseReference userReference;
     String uid;
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnGrades = (Button) findViewById(R.id.btn_grades);
         btnAbsence = (Button) findViewById(R.id.btn_absence);
         btnExams = (Button) findViewById(R.id.btn_exams);
+        btnSubjects = (Button) findViewById(R.id.btn_subjects);
         tvName = (TextView) findViewById(R.id.tv_name);
         tvClass = (TextView) findViewById(R.id.tv_class);
         tvSchool = (TextView) findViewById(R.id.tv_school);
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnGrades.setOnClickListener(this);
         btnAbsence.setOnClickListener(this);
         btnExams.setOnClickListener(this);
+        btnSubjects.setOnClickListener(this);
 
         uid = FirebaseManager.auth.getCurrentUser().getUid();
         userReference = FirebaseDatabase.getInstance().getReference("users/" + uid);
@@ -65,10 +67,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Student s = dataSnapshot.getValue(Student.class);
-                if (s == null) {                                                                             // If user is new, make him update his info
+                // If user is new, make him update his info
+                if (s == null) {
                     Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
                     startActivityForResult(intent, UPDATE_INFO_REQUEST);
-                } else {                                                                                    // If user exists, display his info on-screen
+                }
+                // If user exists, display his info on-screen
+                else {
                     userReference.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -142,6 +147,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
         } else if (v == btnExams) {
             intent.putExtra("topic", "Exams");
+            startActivity(intent);
+        } else if (v== btnSubjects){
+            intent.putExtra("topic", "Subjects");
             startActivity(intent);
         }
     }

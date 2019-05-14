@@ -55,8 +55,13 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 dbRef = dbRef.child("grades").child(FirebaseManager.auth.getUid());
                 retrieveData();
                 break;
+            case "Subjects":
+                dbRef = dbRef.child("subjects").child(FirebaseManager.auth.getUid());
+                retrieveData();
+                break;
         }
 
+        //Ensure that the app doesn't freak out when no data is available
         if (topicList == null) {
             topicList = new ArrayList();
             topicList.add("No data");
@@ -67,7 +72,10 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void retrieveData() {                      //will return false if no data was retrieved
+    /**
+     * Retrieve and show the appropriate data
+     */
+    public void retrieveData() {
         dbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -86,6 +94,10 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                             Grade g = data.getValue(Grade.class);
                             topicList.add(g);
                             break;
+                        case "Subjects":
+                            Subject s = data.getValue(Subject.class);
+                            topicList.add(s.getName());
+                            break;
                     }
                 }
                 setList(topic);
@@ -97,8 +109,12 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         });
     }
 
+    /**
+     * Set up the list in an appropriate manner
+     * @param topic The topic whose adapter needs to be set
+     */
     public void setList(String topic) {
-        if (topicList.size() != 0 && !topicList.get(0).getClass().equals(String.class)) {
+        if (topicList.size() != 0) {
             switch (topic) {
                 case "Absence":
                     AbsenceAdapter absenceAdapter = new AbsenceAdapter(this, 0, topicList);
@@ -111,6 +127,10 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 case "Grades":
                     GradeAdapter gradeAdapter = new GradeAdapter(this, 0, topicList);
                     lvList.setAdapter(gradeAdapter);
+                    break;
+                case "Subjects":
+                    ArrayAdapter stringAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, topicList);
+                    lvList.setAdapter(stringAdapter);
                     break;
             }
         }

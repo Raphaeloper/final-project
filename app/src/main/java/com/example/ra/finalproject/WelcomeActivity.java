@@ -39,6 +39,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             etSchool.setText(school);
             blankSheet = false;
         }
+        //If the user is new, force him to submit info in order to continue
         if (blankSheet) {
             btnCancel.setVisibility(View.INVISIBLE);
             btnCancel.setActivated(false);
@@ -70,6 +71,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * Check if the data input is valid
+     * @return Data input is valid
+     */
     public boolean legit() {
         return etName.getText().length() != 0 && etClass.getText().length() != 0 && etSchool.getText().length() != 0;
     }
