@@ -1,14 +1,12 @@
 package com.example.ra.finalproject;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnExams.setOnClickListener(this);
         btnSubjects.setOnClickListener(this);
 
-        uid = FirebaseManager.auth.getCurrentUser().getUid();
+        uid = FirebaseManager.auth.getUid();
         userReference = FirebaseDatabase.getInstance().getReference("users/" + uid);
         userReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -136,7 +134,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, ListActivity.class);
-        Toast.makeText(MainActivity.this, "Loading...", Toast.LENGTH_SHORT).show();
         if (v == btnLogout)
             FirebaseManager.auth.signOut();
         else if (v == btnGrades) {

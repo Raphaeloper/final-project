@@ -3,31 +3,40 @@ package com.example.ra.finalproject;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener {
+public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
     TextView tvDate, tvWeight, tvWeightAdd, tvMark, tvMarkAdd;
-    EditText etTitle, etSub;
+    EditText etTitle;
+    Spinner spSub;
     CheckBox cbApprovedAdd;
     SeekBar sbWeight, sbMark;
     Button btnConfirmAdd, btnCancelAdd;
-    String topic, directory;
+    String topic, directory, subject;
     DatabaseReference dbRef, topicRef;
     int yearC, monthC, dayC;
     Calendar calendar;
+    ArrayList<String> subjects;
+    ArrayAdapter stringAdapter;
     DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -47,7 +56,7 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         topic = intent.getStringExtra("topic");
 
         etTitle = (EditText) findViewById(R.id.et_title);
-        etSub = (EditText) findViewById(R.id.et_sub);
+        spSub = (Spinner) findViewById(R.id.sp_sub);
         tvDate = (TextView) findViewById(R.id.tv_date);
         cbApprovedAdd = (CheckBox) findViewById(R.id.cb_approved_add);
         tvWeight = (TextView) findViewById(R.id.tv_weight);
@@ -62,6 +71,7 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         yearC = calendar.get(Calendar.YEAR);
         monthC = calendar.get(Calendar.MONTH) + 1;
         dayC = calendar.get(Calendar.DAY_OF_MONTH);
+        subject = "";
 
         tvDate.setOnClickListener(this);
         btnConfirmAdd.setOnClickListener(this);
@@ -73,6 +83,41 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
 
         setMode(topic);
         dbRef = FirebaseDatabase.getInstance().getReference().child(directory).child(FirebaseManager.auth.getUid());
+
+        getSubjects();
+        if (subjects != null) {
+            stringAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, subjects);
+//            spSub.setAdapter(stringAdapter);
+//            spSub.setOnItemSelectedListener(this);
+        }
+    }
+
+    public void getSubjects() {
+        subjects = new ArrayList<String>();
+        if (spSub.isActivated()) {
+            Handler handler = new Handler(new Handler.Callback() {
+                @Override
+                public boolean handleMessage(Message msg) {
+                    if (msg.arg1 == FirebaseManager.DONE_SUBJECTS) {
+                        ArrayList<Subject> alSub = FirebaseManager.subjects;
+                        for (Subject subject : alSub)
+                            subjects.add(subject.getName());
+                    }
+
+                    spSub.setAdapter(stringAdapter);
+                    spSub.setOnItemSelectedListener(AddActivity.this);
+                    return true;
+                }
+            });
+            FirebaseManager.getInstance(this).getSubjects(handler);
+
+        }
+    }
+
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        subject = parent.getItemAtPosition(position).toString();
     }
 
     /**
@@ -89,7 +134,7 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
      */
     public void hideAll() {
         disableView(etTitle);
-        disableView(etSub);
+        disableView(spSub);
         disableView(tvDate);
         disableView(cbApprovedAdd);
         disableView(tvWeight);
@@ -116,14 +161,14 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
     public void setMode(String topic) {
         switch (topic) {
             case "Absence":
-                enableView(etSub);
+                enableView(spSub);
                 enableView(tvDate);
                 enableView(cbApprovedAdd);
                 directory = "absence";
                 break;
             case "Exams":
                 enableView(etTitle);
-                enableView(etSub);
+                enableView(spSub);
                 enableView(tvDate);
                 enableView(tvWeight);
                 enableView(sbWeight);
@@ -132,7 +177,7 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                 break;
             case "Grades":
                 enableView(etTitle);
-                enableView(etSub);
+                enableView(spSub);
                 enableView(tvDate);
                 enableView(tvWeight);
                 enableView(sbWeight);
@@ -159,19 +204,19 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
             if (checkAll()) {
                 switch (topic) {
                     case "Absence":
-                        Absence a = new Absence(etSub.getText().toString(), calendar.getTimeInMillis(), cbApprovedAdd.isChecked());
+                        Absence a = new Absence(subject, calendar.getTimeInMillis(), cbApprovedAdd.isChecked());
                         topicRef = dbRef.push();
                         a.setAid(topicRef.getKey());
                         topicRef.setValue(a);
                         break;
                     case "Exams":
-                        Exam e = new Exam(etTitle.getText().toString(), etSub.getText().toString(), calendar.getTimeInMillis(), sbWeight.getProgress());
+                        Exam e = new Exam(etTitle.getText().toString(), subject, calendar.getTimeInMillis(), sbWeight.getProgress());
                         topicRef = dbRef.push();
                         e.setEid(topicRef.getKey());
                         topicRef.setValue(e);
                         break;
                     case "Grades":
-                        Grade g = new Grade(etTitle.getText().toString(), etSub.getText().toString(), calendar.getTimeInMillis(), sbWeight.getProgress(), sbMark.getProgress());
+                        Grade g = new Grade(etTitle.getText().toString(), subject, calendar.getTimeInMillis(), sbWeight.getProgress(), sbMark.getProgress());
                         topicRef = dbRef.push();
                         g.setGid(topicRef.getKey());
                         topicRef.setValue(g);
@@ -198,7 +243,7 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
      */
     public boolean checkAll() {
         return !((etTitle.isActivated() && etTitle.getText().length() == 0) ||
-                (etSub.isActivated() && etSub.getText().length() == 0) ||
+                (spSub.isActivated() && subject.length() == 0) ||
                 (tvDate.isActivated() && tvDate.getText().length() == 4) ||
                 (sbWeight.isActivated() && (sbWeight.getProgress() == 0 || sbWeight.getProgress() == 100)));
     }
@@ -223,5 +268,10 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 }
