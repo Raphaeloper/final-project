@@ -1,7 +1,6 @@
 package com.example.ra.finalproject;
 
-public class Exam {
-    private String eid;
+public class Exam extends Item {
     private String title, subject;
     private long date;
     private int weight;
@@ -14,10 +13,6 @@ public class Exam {
         this.date = date;
         this.weight = weight;
     }
-
-    public String getEid() { return eid; }
-
-    public void setEid(String eid) { this.eid = eid; }
 
     public String getTitle() {
         return title;

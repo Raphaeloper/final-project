@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, ListActivity.class);
         if (v == btnLogout)
-            FirebaseManager.auth.signOut();
+            FirebaseManager.getInstance(MainActivity.this).logout();
         else if (v == btnGrades) {
             intent.putExtra("topic", "Grades");
             startActivity(intent);

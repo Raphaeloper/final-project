@@ -1,7 +1,6 @@
 package com.example.ra.finalproject;
 
-public class Grade {
-    private String gid;
+public class Grade extends Item {
     private String title, subject;
     private long date;
     private int weight;
@@ -16,10 +15,6 @@ public class Grade {
         this.weight = weight;
         this.num = num;
     }
-
-    public String getGid() { return gid; }
-
-    public void setGid(String gid) { this.gid = gid; }
 
     public int getWeight() {
         return weight;

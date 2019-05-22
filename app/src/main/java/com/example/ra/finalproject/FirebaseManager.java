@@ -28,29 +28,34 @@ public class FirebaseManager {
     static FirebaseAuth auth;
     private static FirebaseManager instance = null;
     private static Context context;
-    private DatabaseReference baseRef, gradeRef, examRef, absenceRef, subjectRef;
-
+    public DatabaseReference baseRef, gradeRef, examRef, absenceRef, subjectRef;
 
     private FirebaseManager() {
         auth = FirebaseAuth.getInstance();
-        baseRef = FirebaseDatabase.getInstance().getReference();
-        gradeRef = baseRef.child("grades").child(auth.getUid());
-        examRef = baseRef.child("exams").child(auth.getUid());
-        absenceRef = baseRef.child("absence").child(auth.getUid());
-        subjectRef = baseRef.child("subjects").child(auth.getUid());
-        grades = new ArrayList<Grade>();
-        exams = new ArrayList<Exam>();
-        absence = new ArrayList<Absence>();
-        subjects = new ArrayList<Subject>();
+        if (auth.getUid() != null) {
+            baseRef = FirebaseDatabase.getInstance().getReference();
+            gradeRef = baseRef.child("grades").child(auth.getUid());
+            examRef = baseRef.child("exams").child(auth.getUid());
+            absenceRef = baseRef.child("absence").child(auth.getUid());
+            subjectRef = baseRef.child("subjects").child(auth.getUid());
+            grades = new ArrayList<Grade>();
+            exams = new ArrayList<Exam>();
+            absence = new ArrayList<Absence>();
+            subjects = new ArrayList<Subject>();
+        }
     }
 
     static FirebaseManager getInstance(Context context) {
         FirebaseManager.context = context;
-        if (instance == null)
+        if (instance == null || grades == null)
             instance = new FirebaseManager();
         return instance;
     }
 
+    void logout() {
+        auth.signOut();
+        instance = null;
+    }
     void signUp(String email, String pass) {
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
             @Override

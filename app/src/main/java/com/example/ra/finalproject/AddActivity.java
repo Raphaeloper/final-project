@@ -87,8 +87,6 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         getSubjects();
         if (subjects != null) {
             stringAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, subjects);
-//            spSub.setAdapter(stringAdapter);
-//            spSub.setOnItemSelectedListener(this);
         }
     }
 
@@ -206,25 +204,25 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                     case "Absence":
                         Absence a = new Absence(subject, calendar.getTimeInMillis(), cbApprovedAdd.isChecked());
                         topicRef = dbRef.push();
-                        a.setAid(topicRef.getKey());
+                        a.setId(topicRef.getKey());
                         topicRef.setValue(a);
                         break;
                     case "Exams":
                         Exam e = new Exam(etTitle.getText().toString(), subject, calendar.getTimeInMillis(), sbWeight.getProgress());
                         topicRef = dbRef.push();
-                        e.setEid(topicRef.getKey());
+                        e.setId(topicRef.getKey());
                         topicRef.setValue(e);
                         break;
                     case "Grades":
                         Grade g = new Grade(etTitle.getText().toString(), subject, calendar.getTimeInMillis(), sbWeight.getProgress(), sbMark.getProgress());
                         topicRef = dbRef.push();
-                        g.setGid(topicRef.getKey());
+                        g.setId(topicRef.getKey());
                         topicRef.setValue(g);
                         break;
                     case "Subjects":
                         Subject s = new Subject(etTitle.getText().toString());
                         topicRef = dbRef.push();
-                        s.setSid(topicRef.getKey());
+                        s.setId(topicRef.getKey());
                         topicRef.setValue(s);
                         break;
                 }
