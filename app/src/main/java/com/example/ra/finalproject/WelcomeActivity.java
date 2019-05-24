@@ -1,21 +1,40 @@
 package com.example.ra.finalproject;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class WelcomeActivity extends AppCompatActivity implements View.OnClickListener {
+    final int TAKE_PIC = 1234, PICK_PIC = 7689;
     EditText etName, etClass, etSchool;
-    Button btnConfirm, btnCancel;
-    boolean blankSheet = true;
+    ImageView ivPreview;
+    Button btnTakePic, btnBrowse, btnConfirm, btnCancel;
+    Uri filePath;
+    Bitmap bitmap;
+    boolean blankSheet = true, pic = false;
+    Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +43,9 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         etName = (EditText) findViewById(R.id.et_name);
         etClass = (EditText) findViewById(R.id.et_class);
         etSchool = (EditText) findViewById(R.id.et_school);
+        ivPreview = (ImageView) findViewById(R.id.iv_preview);
+        btnTakePic = (Button) findViewById(R.id.btn_take_pic);
+        btnBrowse = (Button) findViewById(R.id.btn_browse);
         btnConfirm = (Button) findViewById(R.id.btn_confirm);
         btnCancel = (Button) findViewById(R.id.btn_cancel);
         btnCancel.setVisibility(View.VISIBLE);
@@ -39,19 +61,41 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             etSchool.setText(school);
             blankSheet = false;
         }
+        handler = new Handler(new Handler.Callback() {
+            @Override
+            public boolean handleMessage(Message msg) {
+                if (msg.arg1 == FirebaseManager.DONE_PIC) {
+                    setResult(RESULT_OK);
+                    finish();
+                }
+                return true;
+            }
+        });
         //If the user is new, force him to submit info in order to continue
         if (blankSheet) {
             btnCancel.setVisibility(View.INVISIBLE);
             btnCancel.setActivated(false);
         }
+        btnTakePic.setOnClickListener(this);
+        btnBrowse.setOnClickListener(this);
         btnConfirm.setOnClickListener(this);
         btnCancel.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        if (v == btnConfirm) {
-            if (legit()) {
+        if (v == btnTakePic) {
+            startActivityForResult(new Intent(MediaStore.ACTION_IMAGE_CAPTURE), TAKE_PIC);
+        } else if (v == btnBrowse) {
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            File directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+            String path = directory.getPath();
+            Uri data = Uri.parse(path);
+            intent.setDataAndType(data, "image/*");
+            startActivityForResult(intent, PICK_PIC);
+        } else if (v == btnConfirm) {
+            if (legit() && pic) {
+                FirebaseManager.getInstance(this).uploadImage(filePath, handler);
                 String name, stClass, school;
                 name = etName.getText().toString();
                 stClass = etClass.getText().toString();
@@ -60,10 +104,8 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 Student student = new Student(uid, name, stClass, school);
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
                 dbRef.child("users").child(uid).setValue(student);
-                setResult(RESULT_OK);
-                finish();
             } else {
-                Toast.makeText(this, "All fields must be filled", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "All fields must be filled and a picture must be selected/taken", Toast.LENGTH_LONG).show();
             }
         } else if (v == btnCancel) {
             setResult(RESULT_CANCELED);
@@ -71,8 +113,49 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_PIC && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                ivPreview.setImageBitmap(bitmap);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            pic = true;
+        } else if (requestCode == TAKE_PIC && resultCode == RESULT_OK) {
+            bitmap = (Bitmap) data.getExtras().get("data");
+            ivPreview.setImageBitmap(bitmap);
+            String uid = FirebaseManager.auth.getUid();
+            saveBItmap(bitmap, uid);
+            File tFile = new File(getFilesDir() + "/" + uid);
+            filePath = Uri.fromFile(tFile);
+            pic = true;
+        }
+    }
+
+    void saveBItmap(Bitmap bitmap, String fileName) {
+        ByteArrayOutputStream byteAOS = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteAOS);
+        FileOutputStream fileOS = null;
+        try {
+            fileOS = openFileOutput(fileName, Context.MODE_PRIVATE);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        try {
+            fileOS.write(byteAOS.toByteArray());
+            fileOS.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Check if the data input is valid
+     *
      * @return Data input is valid
      */
     public boolean legit() {

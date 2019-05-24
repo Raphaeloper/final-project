@@ -1,10 +1,12 @@
 package com.example.ra.finalproject;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -228,6 +230,9 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                 }
                 finish();
             } else {
+                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                long[] arr = {0, 200, 0, 200, 0, 200};
+                vibrator.vibrate(arr, -1);
                 Toast.makeText(this, "Either one of the fields is empty or data is illogical", Toast.LENGTH_LONG).show();
             }
         } else if (v == btnCancelAdd) {

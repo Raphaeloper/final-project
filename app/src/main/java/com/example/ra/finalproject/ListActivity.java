@@ -53,9 +53,17 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
             topicList.add("");
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, topicList);
             lvList.setAdapter(arrayAdapter);
+            if (topic.equals("Grades"))
+                tvTotal.setText("Average: 0");
+            else
+                tvTotal.setText("Total: 0");
         } else {
             lvList.setVisibility(View.VISIBLE);
             lvList.setActivated(true);
+            if (topic.equals("Grades"))
+                tvTotal.setText("Average: " + getAverage());
+            else
+                tvTotal.setText("Total: " + topicList.size());
         }
         lvList.setOnItemLongClickListener(this);
 
@@ -88,6 +96,10 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                     subjectAdapter = new SubjectAdapter(ListActivity.this, 0, topicList);
                     lvList.setAdapter(subjectAdapter);
                 }
+                if (topic.equals("Grades"))
+                    tvTotal.setText("Average: " + getAverage());
+                else
+                    tvTotal.setText("Total: " + topicList.size());
                 lvList.setVisibility(View.VISIBLE);
                 lvList.setActivated(true);
                 return true;
@@ -108,6 +120,20 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 fbManager.getSubjectsAndGrades(handler);
                 break;
         }
+    }
+
+    String getAverage() {
+        double sum = 0;
+        int weightSum = 0;
+        String average = "";
+        ArrayList<Grade> grades = topicList;
+        for (Grade grade : grades) {
+            sum += grade.getNum() * grade.getWeight();
+            weightSum += grade.getWeight();
+        }
+        average = (sum / weightSum) + "";
+        average = average.substring(0, average.indexOf(".") + 2);
+        return average;
     }
 
 
