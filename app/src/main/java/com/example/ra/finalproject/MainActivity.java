@@ -1,5 +1,6 @@
 package com.example.ra.finalproject;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     String uid;
     Handler handler;
     Bitmap bitmap;
+    boolean newUser = false;
     FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -41,8 +43,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (user == null) {
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 finish();
-            } else
-                Toast.makeText(MainActivity.this, "Not logged out", Toast.LENGTH_SHORT).show();
+            }
         }
     };
 
@@ -84,36 +85,43 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         userReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                final ProgressDialog progressDialog = FirebaseManager.getInstance(MainActivity.this).buildProgressDialog();
+                progressDialog.show();
                 Student s = dataSnapshot.getValue(Student.class);
                 // If user is new, make him update his info
                 if (s == null) {
                     Intent intent = new Intent(MainActivity.this, WelcomeActivity.class);
+                    progressDialog.dismiss();
                     startActivityForResult(intent, UPDATE_INFO_REQUEST);
+                    newUser = true;
                 }
                 // If user exists, display his info on-screen
                 else {
                     tvName.setText(s.getName());
                     tvClass.setText(s.getClassroom());
                     tvSchool.setText(s.getSchool());
-
-                    final long ONE_MEGABYTE = 1024 * 1024;
-                    FirebaseManager.getInstance(MainActivity.this).picStorageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            if (bitmap != null) {
-                                Message message = new Message();
-                                message.arg1 = FIN_PIC_DOWNLOAD;
-                                handler.sendMessage(message);
+                    progressDialog.dismiss();
+                    if (!newUser) {
+                        final long ONE_MEGABYTE = 1024 * 1024;
+                        FirebaseManager.getInstance(MainActivity.this).picStorageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                            @Override
+                            public void onSuccess(byte[] bytes) {
+                                bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                                if (bitmap != null) {
+                                    Message message = new Message();
+                                    message.arg1 = FIN_PIC_DOWNLOAD;
+                                    handler.sendMessage(message);
+                                    progressDialog.dismiss();
+                                }
                             }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(MainActivity.this, "Failed: " + e, Toast.LENGTH_LONG).show();
-                        }
-                    });
-
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(MainActivity.this, "Failed: " + e, Toast.LENGTH_LONG).show();
+                                progressDialog.dismiss();
+                            }
+                        });
+                    }
                 }
             }
 
@@ -124,57 +132,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         });
 
 
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseManager.auth.addAuthStateListener(authStateListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (authStateListener != null)
-            FirebaseManager.auth.removeAuthStateListener(authStateListener);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == UPDATE_INFO_REQUEST) {
-            userReference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Student s = dataSnapshot.getValue(Student.class);
-                    tvName.setText(s.getName());
-                    tvClass.setText(s.getClassroom());
-                    tvSchool.setText(s.getSchool());
-                    final long ONE_MEGABYTE = 1024 * 1024;
-                    FirebaseManager.getInstance(MainActivity.this).picStorageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                        @Override
-                        public void onSuccess(byte[] bytes) {
-                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                            if (bitmap != null) {
-                                Message message = new Message();
-                                message.arg1 = FIN_PIC_DOWNLOAD;
-                                handler.sendMessage(message);
-                            }
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(MainActivity.this, "Failed: " + e, Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-        }
     }
 
     @Override
@@ -195,5 +152,60 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("topic", "Subjects");
             startActivity(intent);
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == UPDATE_INFO_REQUEST) {
+            final ProgressDialog progressDialog = FirebaseManager.getInstance(MainActivity.this).buildProgressDialog();
+            progressDialog.show();
+            userReference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Student s = dataSnapshot.getValue(Student.class);
+                    tvName.setText(s.getName());
+                    tvClass.setText(s.getClassroom());
+                    tvSchool.setText(s.getSchool());
+                    final long ONE_MEGABYTE = 1024 * 1024;
+                    FirebaseManager.getInstance(MainActivity.this).picStorageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            if (bitmap != null) {
+                                Message message = new Message();
+                                message.arg1 = FIN_PIC_DOWNLOAD;
+                                handler.sendMessage(message);
+                                progressDialog.dismiss();
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(MainActivity.this, "Failed: " + e, Toast.LENGTH_LONG).show();
+                            progressDialog.dismiss();
+                        }
+                    });
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseManager.auth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null)
+            FirebaseManager.auth.removeAuthStateListener(authStateListener);
     }
 }

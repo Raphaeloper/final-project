@@ -1,7 +1,9 @@
 package com.example.ra.finalproject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -16,20 +18,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     FirebaseManager manager;
     EditText etEmail, etPass;
     Button btnLogin, btnSignUp;
-    private FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
-        @Override
-        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                Toast.makeText(LoginActivity.this, "Logged in", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                finish();
-            } else {
-                Toast.makeText(LoginActivity.this, "Logged out", Toast.LENGTH_SHORT).show();
-            }
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,17 +32,33 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         btnSignUp.setOnClickListener(this);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseManager.auth.addAuthStateListener(authStateListener);
+    private FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                Toast.makeText(LoginActivity.this, "Logged in", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                finish();
+            }
+        }
+    };
+
+    public void vibrate() {
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        long[] arr = {0, 200, 0, 200, 0, 200};
+        vibrator.vibrate(arr, -1);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (authStateListener != null)
-            FirebaseManager.auth.removeAuthStateListener(authStateListener);
+    /**
+     * Check if the input is valid
+     *
+     * @param email The text that is typed in the email box
+     * @param pass  The text that is typed in the password box
+     * @return Input is valid
+     */
+    public boolean legit(String email, String pass) {
+        return email.contains("@") && email.contains(".") && pass.length() > 7;
     }
 
     @Override
@@ -67,20 +71,27 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     manager.login(email, pass);
                 else if (v == btnSignUp)
                     manager.signUp(email, pass);
-            } else
+            } else {
+                vibrate();
                 Toast.makeText(LoginActivity.this, "Email must be valid, Password must contain 8 or more characters",
                         Toast.LENGTH_LONG).show();
-        } else
+            }
+        } else {
+            vibrate();
             Toast.makeText(LoginActivity.this, "All fields must be filled out in order to continue", Toast.LENGTH_LONG).show();
+        }
     }
 
-    /**
-     * Check if the input is valid
-     * @param email The text that is typed in the email box
-     * @param pass The text that is typed in the password box
-     * @return Input is valid
-     */
-    public boolean legit(String email, String pass) {
-        return email.contains("@") && email.contains(".") && pass.length() > 7;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseManager.auth.addAuthStateListener(authStateListener);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (authStateListener != null)
+            FirebaseManager.auth.removeAuthStateListener(authStateListener);
     }
 }

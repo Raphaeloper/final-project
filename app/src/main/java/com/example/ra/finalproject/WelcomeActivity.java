@@ -1,13 +1,17 @@
 package com.example.ra.finalproject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -35,6 +39,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
     Bitmap bitmap;
     boolean blankSheet = true, pic = false;
     Handler handler;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             public boolean handleMessage(Message msg) {
                 if (msg.arg1 == FirebaseManager.DONE_PIC) {
                     setResult(RESULT_OK);
+                    progressDialog.dismiss();
                     finish();
                 }
                 return true;
@@ -82,6 +88,12 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         btnCancel.setOnClickListener(this);
     }
 
+    public void vibrate() {
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        long[] arr = {0, 200, 0, 200, 0, 200};
+        vibrator.vibrate(arr, -1);
+    }
+
     @Override
     public void onClick(View v) {
         if (v == btnTakePic) {
@@ -95,7 +107,10 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
             startActivityForResult(intent, PICK_PIC);
         } else if (v == btnConfirm) {
             if (legit() && pic) {
-                FirebaseManager.getInstance(this).uploadImage(filePath, handler);
+                FirebaseManager firebaseManager = FirebaseManager.getInstance(this);
+                progressDialog = firebaseManager.buildProgressDialog();
+                progressDialog.show();
+                firebaseManager.uploadImage(filePath, handler);
                 String name, stClass, school;
                 name = etName.getText().toString();
                 stClass = etClass.getText().toString();
@@ -105,6 +120,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
                 DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference();
                 dbRef.child("users").child(uid).setValue(student);
             } else {
+                vibrate();
                 Toast.makeText(this, "All fields must be filled and a picture must be selected/taken", Toast.LENGTH_LONG).show();
             }
         } else if (v == btnCancel) {
@@ -118,12 +134,16 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_PIC && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                ivPreview.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String[] FILE = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(filePath, FILE, null, null, null);
+            cursor.moveToFirst();
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            int columnIndex = cursor.getColumnIndex(FILE[0]);
+            String imageDecode = cursor.getString(columnIndex);
+            cursor.close();
+            options.inSampleSize = 4;
+            Bitmap bitmap = BitmapFactory.decodeFile(imageDecode, options);
+            ivPreview.setImageBitmap(bitmap);
             pic = true;
         } else if (requestCode == TAKE_PIC && resultCode == RESULT_OK) {
             bitmap = (Bitmap) data.getExtras().get("data");

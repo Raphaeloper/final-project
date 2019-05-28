@@ -1,6 +1,7 @@
 package com.example.ra.finalproject;
 
 import android.app.DatePickerDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -39,17 +40,6 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
     Calendar calendar;
     ArrayList<String> subjects;
     ArrayAdapter stringAdapter;
-    DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            yearC = year;
-            monthC = month + 1;
-            dayC = dayOfMonth;
-            calendar.set(yearC, monthC - 1, dayC);
-            tvDate.setText(dayC + "/" + monthC + "/" + yearC);
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,6 +185,17 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         }
     }
 
+    DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            yearC = year;
+            monthC = month + 1;
+            dayC = dayOfMonth;
+            calendar.set(yearC, monthC - 1, dayC);
+            tvDate.setText(dayC + "/" + monthC + "/" + yearC);
+        }
+    };
+
     @Override
     public void onClick(View v) {
         if (v == tvDate) {
@@ -202,6 +203,8 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
             datePickerDialog.show();
         } else if (v == btnConfirmAdd) {
             if (checkAll()) {
+                ProgressDialog progressDialog = FirebaseManager.getInstance(AddActivity.this).buildProgressDialog();
+                progressDialog.show();
                 switch (topic) {
                     case "Absence":
                         Absence a = new Absence(subject, calendar.getTimeInMillis(), cbApprovedAdd.isChecked());
@@ -228,18 +231,16 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
                         topicRef.setValue(s);
                         break;
                 }
+                progressDialog.dismiss();
                 finish();
             } else {
-                Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                long[] arr = {0, 200, 0, 200, 0, 200};
-                vibrator.vibrate(arr, -1);
+                vibrate();
                 Toast.makeText(this, "Either one of the fields is empty or data is illogical", Toast.LENGTH_LONG).show();
             }
         } else if (v == btnCancelAdd) {
             finish();
         }
     }
-
     /**
      * Check if the data input was valid
      * @return Data input is valid
@@ -263,6 +264,12 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
             tvWeightAdd.setText(progress + "%");
         else if (seekBar == sbMark)
             tvMarkAdd.setText(progress + "%");
+    }
+
+    public void vibrate() {
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        long[] arr = {0, 200, 0, 200, 0, 200};
+        vibrator.vibrate(arr, -1);
     }
 
     @Override

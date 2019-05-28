@@ -1,6 +1,7 @@
 package com.example.ra.finalproject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Handler;
@@ -36,6 +37,7 @@ public class FirebaseManager {
     private static Context context;
     DatabaseReference baseDataRef, gradeRef, examRef, absenceRef, subjectRef;
     StorageReference baseStorageRef, picStorageRef;
+    boolean gotGrades, gotSubjects;
     
 
     private FirebaseManager() {
@@ -52,6 +54,8 @@ public class FirebaseManager {
             exams = new ArrayList<Exam>();
             absence = new ArrayList<Absence>();
             subjects = new ArrayList<Subject>();
+            gotGrades = false;
+            gotSubjects = false;
         }
     }
 
@@ -67,6 +71,8 @@ public class FirebaseManager {
         instance = null;
     }
     void signUp(String email, String pass) {
+        final ProgressDialog progressDialog = buildProgressDialog();
+        progressDialog.show();
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -76,11 +82,14 @@ public class FirebaseManager {
                 } else {
                     Toast.makeText(context, "Failed to sign up", Toast.LENGTH_SHORT).show();
                 }
+                progressDialog.dismiss();
             }
         });
     }
 
     void login(String email, String pass) {
+        final ProgressDialog progressDialog = buildProgressDialog();
+        progressDialog.show();
         auth.signInWithEmailAndPassword(email, pass).addOnCompleteListener((Activity) context, new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
@@ -90,6 +99,7 @@ public class FirebaseManager {
                 } else {
                     Toast.makeText(context, "Failed to login, try again or sign up", Toast.LENGTH_SHORT).show();
                 }
+                progressDialog.dismiss();
             }
         });
     }
@@ -177,11 +187,13 @@ public class FirebaseManager {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 subjects.clear();
+                gotSubjects = false;
                 for (DataSnapshot data : dataSnapshot.getChildren())
                     subjects.add(data.getValue(Subject.class));
                 Message message = new Message();
                 message.arg1 = DONE_SUBJECTS;
-                if (grades.size() != 0) {
+                gotSubjects = true;
+                if (gotGrades) {
                     handler.sendMessage(message);
                 }
             }
@@ -196,11 +208,13 @@ public class FirebaseManager {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 grades.clear();
+                gotGrades = false;
                 for (DataSnapshot data : dataSnapshot.getChildren())
                     grades.add(data.getValue(Grade.class));
                 Message message = new Message();
                 message.arg1 = DONE_SUBJECTS;
-                if (subjects.size() != 0) {
+                gotGrades = true;
+                if (gotSubjects) {
                     handler.sendMessage(message);
                 }
 
@@ -211,10 +225,6 @@ public class FirebaseManager {
 
             }
         });
-    }
-
-    void removeValue(DatabaseReference dbRef) {
-        dbRef.removeValue();
     }
 
     void uploadImage(Uri filePath, final Handler handler) {
@@ -236,5 +246,14 @@ public class FirebaseManager {
                         }
                     });
         }
+    }
+
+    public ProgressDialog buildProgressDialog() {
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setTitle("Loading...");
+        progressDialog.setMessage("Data is being transferred");
+        progressDialog.setCancelable(false);
+        return progressDialog;
     }
 }

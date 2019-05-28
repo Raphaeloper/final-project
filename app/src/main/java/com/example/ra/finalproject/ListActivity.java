@@ -1,5 +1,6 @@
 package com.example.ra.finalproject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -75,7 +76,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     public void retrieveData() {
         //This happens only after the function fbManager.get[TOPIC] is executed;
         final FirebaseManager fbManager = FirebaseManager.getInstance(this);
-
+        final ProgressDialog progressDialog = fbManager.buildProgressDialog();
         Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
@@ -102,10 +103,11 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                     tvTotal.setText("Total: " + topicList.size());
                 lvList.setVisibility(View.VISIBLE);
                 lvList.setActivated(true);
+                progressDialog.dismiss();
                 return true;
             }
         });
-
+        progressDialog.show();
         switch (topic) {
             case "Grades":
                 fbManager.getGrades(handler);
