@@ -1,7 +1,5 @@
 package com.example.ra.finalproject;
 
-import java.util.ArrayList;
-
 public class Student {
     private String uid, name, classroom, school;
 

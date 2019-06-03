@@ -29,10 +29,12 @@ public class AbsenceAdapter extends ArrayAdapter<Absence> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
         View view = layoutInflater.inflate(R.layout.c_layout_ab, parent, false);
+
         TextView tvSubAb = (TextView) view.findViewById(R.id.tv_sub_ab);
         TextView tvDateAb = (TextView) view.findViewById(R.id.tv_date_ab);
         CheckBox cbApproved = (CheckBox) view.findViewById(R.id.cb_approved);
         Absence t = obj.get(position);
+
         tvSubAb.setText(t.getSubject());
         tvDateAb.setText(getDate(t.getDate()));
         cbApproved.setChecked(t.isApproved());

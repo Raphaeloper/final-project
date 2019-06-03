@@ -6,7 +6,8 @@ public class Grade extends Item {
     private int weight;
     private int num;
 
-    public Grade() {}
+    public Grade() {
+    }
 
     public Grade(String title, String subject, long date, int weight, int num) {
         this.title = title;

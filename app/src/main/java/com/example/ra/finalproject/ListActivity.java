@@ -80,6 +80,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         Handler handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
+                //second
                 if (msg.arg1 == FirebaseManager.DONE_GRADES) {
                     topicList = FirebaseManager.grades;
                     gradeAdapter = new GradeAdapter(ListActivity.this, 0, topicList);
@@ -108,6 +109,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         progressDialog.show();
+        //first
         switch (topic) {
             case "Grades":
                 fbManager.getGrades(handler);
@@ -124,6 +126,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //calculates general average
     String getAverage() {
         double sum = 0;
         int weightSum = 0;
@@ -148,6 +151,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    //delete
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         Item item = (Item) parent.getItemAtPosition(position);
@@ -155,6 +159,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
+    //confirm delete
     public void buildAndShowDialog(String id) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Delete");
@@ -166,6 +171,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         alertDialog.show();
     }
 
+    //data refresh
     @Override
     protected void onResume() {
         super.onResume();

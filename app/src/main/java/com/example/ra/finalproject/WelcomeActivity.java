@@ -135,6 +135,7 @@ public class WelcomeActivity extends AppCompatActivity implements View.OnClickLi
         if (requestCode == PICK_PIC && resultCode == RESULT_OK && data != null && data.getData() != null) {
             filePath = data.getData();
             String[] FILE = {MediaStore.Images.Media.DATA};
+            //ContentProvider
             Cursor cursor = getContentResolver().query(filePath, FILE, null, null, null);
             cursor.moveToFirst();
             BitmapFactory.Options options = new BitmapFactory.Options();

@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:baselineAligned="false"
     android:layoutDirection="ltr"
     android:orientation="horizontal"
     android:paddingLeft="24dp"
     android:paddingTop="16dp"
     android:paddingRight="24dp"
-    android:paddingBottom="16dp"
-    android:baselineAligned="false">
+    android:paddingBottom="16dp">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -32,6 +32,7 @@
             android:text="Date"
             android:textSize="20sp" />
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"

@@ -1,6 +1,7 @@
 package com.example.ra.finalproject;
 
 public class Item {
+    //existence justified by simplifying the delete of an item - ListActivity
     private String id;
 
     public Item() {

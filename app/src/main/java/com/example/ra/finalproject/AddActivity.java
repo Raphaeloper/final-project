@@ -40,6 +40,18 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
     Calendar calendar;
     ArrayList<String> subjects;
     ArrayAdapter stringAdapter;
+    //date picker
+    DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
+        @Override
+        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+            yearC = year;
+            monthC = month + 1;
+            dayC = dayOfMonth;
+            calendar.set(yearC, monthC - 1, dayC);
+            tvDate.setText(dayC + "/" + monthC + "/" + yearC);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,18 +82,19 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         btnCancelAdd.setOnClickListener(this);
         sbWeight.setOnSeekBarChangeListener(this);
         sbMark.setOnSeekBarChangeListener(this);
-
+        //clean screen
         hideAll();
-
+        //set screen
         setMode(topic);
         dbRef = FirebaseDatabase.getInstance().getReference().child(directory).child(FirebaseManager.auth.getUid());
-
+        //set spinner
         getSubjects();
         if (subjects != null) {
             stringAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, subjects);
         }
     }
 
+    //set spinner
     public void getSubjects() {
         subjects = new ArrayList<String>();
         if (spSub.isActivated()) {
@@ -104,7 +117,6 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         }
     }
 
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         subject = parent.getItemAtPosition(position).toString();
@@ -112,6 +124,7 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
 
     /**
      * Make a certain view not interactive
+     *
      * @param v The view that needs to be disabled
      */
     public void disableView(View v) {
@@ -137,6 +150,7 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
 
     /**
      * Make a certain view interactive
+     *
      * @param v The view that needs to be enabled
      */
     public void enableView(View v) {
@@ -146,6 +160,7 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
 
     /**
      * Set up the screen in a way that shows only the relevant views for that topic
+     *
      * @param topic The topic that the screen needs to show
      */
     public void setMode(String topic) {
@@ -185,20 +200,10 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
         }
     }
 
-    DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-        @Override
-        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-            yearC = year;
-            monthC = month + 1;
-            dayC = dayOfMonth;
-            calendar.set(yearC, monthC - 1, dayC);
-            tvDate.setText(dayC + "/" + monthC + "/" + yearC);
-        }
-    };
-
     @Override
     public void onClick(View v) {
         if (v == tvDate) {
+            //date picker
             DatePickerDialog datePickerDialog = new DatePickerDialog(this, dateSetListener, yearC, monthC - 1, dayC);
             datePickerDialog.show();
         } else if (v == btnConfirmAdd) {
@@ -241,8 +246,10 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
             finish();
         }
     }
+
     /**
      * Check if the data input was valid
+     *
      * @return Data input is valid
      */
     public boolean checkAll() {
@@ -254,7 +261,8 @@ public class AddActivity extends AppCompatActivity implements SeekBar.OnSeekBarC
 
     /**
      * Modify the appropriate TextView when the value on the SeekBar is modified
-     * @param seekBar The SeekBar whose value is modified
+     *
+     * @param seekBar  The SeekBar whose value is modified
      * @param progress Current progress
      * @param fromUser Was the progress changed by the user?
      */

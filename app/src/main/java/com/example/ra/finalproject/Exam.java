@@ -5,7 +5,8 @@ public class Exam extends Item {
     private long date;
     private int weight;
 
-    public Exam(){}
+    public Exam() {
+    }
 
     public Exam(String title, String subject, long date, int weight) {
         this.title = title;

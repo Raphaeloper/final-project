@@ -27,19 +27,26 @@ import com.google.firebase.storage.UploadTask;
 import java.util.ArrayList;
 
 public class FirebaseManager {
+    //const for handler
     static final int DONE_GRADES = 5555, DONE_EXAMS = 6666, DONE_ABSENCE = 7777, DONE_SUBJECTS = 8888, DONE_PIC = 9999;
+    //topic lists
     public static ArrayList<Grade> grades;
     public static ArrayList<Exam> exams;
     public static ArrayList<Absence> absence;
     public static ArrayList<Subject> subjects;
+    //user
     static FirebaseAuth auth;
+    //singleton
     private static FirebaseManager instance = null;
+    //for toasts, progress dialogs, etc.
     private static Context context;
+    //firebase-related stuff
     DatabaseReference baseDataRef, gradeRef, examRef, absenceRef, subjectRef;
     StorageReference baseStorageRef, picStorageRef;
+    //verification for grades and subjects - need to be retrieved together for the subject list
     boolean gotGrades, gotSubjects;
-    
 
+    //initiation
     private FirebaseManager() {
         auth = FirebaseAuth.getInstance();
         if (auth.getUid() != null) {
@@ -70,6 +77,7 @@ public class FirebaseManager {
         auth.signOut();
         instance = null;
     }
+
     void signUp(String email, String pass) {
         final ProgressDialog progressDialog = buildProgressDialog();
         progressDialog.show();

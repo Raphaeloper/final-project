@@ -10,6 +10,8 @@ import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -28,7 +30,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     final int UPDATE_INFO_REQUEST = 1234, FIN_PIC_DOWNLOAD = 5678;
-    Button btnLogout, btnGrades, btnAbsence, btnExams, btnSubjects;
+    Button btnGrades, btnAbsence, btnExams, btnSubjects;
     TextView tvName, tvClass, tvSchool, tvAvg, tvAbsTotal, tvExamTotal;
     ImageView ivProfile;
     DatabaseReference userReference;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Handler handler;
     Bitmap bitmap;
     boolean newUser = false;
+    //if the user logs out, he's redirected to the login screen
     FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -51,7 +54,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btnLogout = (Button) findViewById(R.id.btn_logout);
         btnGrades = (Button) findViewById(R.id.btn_grades);
         btnAbsence = (Button) findViewById(R.id.btn_absence);
         btnExams = (Button) findViewById(R.id.btn_exams);
@@ -64,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tvExamTotal = (TextView) findViewById(R.id.tv_exam_total);
         ivProfile = (ImageView) findViewById(R.id.iv_profile);
 
-        btnLogout.setOnClickListener(this);
         btnGrades.setOnClickListener(this);
         btnAbsence.setOnClickListener(this);
         btnExams.setOnClickListener(this);
@@ -100,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     tvName.setText(s.getName());
                     tvClass.setText(s.getClassroom());
                     tvSchool.setText(s.getSchool());
-                    progressDialog.dismiss();
                     if (!newUser) {
                         final long ONE_MEGABYTE = 1024 * 1024;
                         FirebaseManager.getInstance(MainActivity.this).picStorageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -121,7 +121,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 progressDialog.dismiss();
                             }
                         });
-                    }
+                    } else
+                        progressDialog.dismiss();
                 }
             }
 
@@ -137,9 +138,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(MainActivity.this, ListActivity.class);
-        if (v == btnLogout)
-            FirebaseManager.getInstance(MainActivity.this).logout();
-        else if (v == btnGrades) {
+        if (v == btnGrades) {
             intent.putExtra("topic", "Grades");
             startActivity(intent);
         } else if (v == btnAbsence) {
@@ -197,11 +196,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.logout_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_disconect:
+                FirebaseManager.getInstance(MainActivity.this).logout();
+        }
+        return true;
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         FirebaseManager.auth.addAuthStateListener(authStateListener);
     }
 
+    //prevents the waste of resources
     @Override
     protected void onStop() {
         super.onStop();

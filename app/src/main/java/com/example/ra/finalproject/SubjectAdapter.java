@@ -29,9 +29,11 @@ public class SubjectAdapter extends ArrayAdapter<Subject> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
         View view = layoutInflater.inflate(R.layout.c_layout_sb, parent, false);
+
         TextView tvSubSb = (TextView) view.findViewById(R.id.tv_sub_sb);
         TextView tvAvgSb = (TextView) view.findViewById(R.id.tv_avg_sb);
         Subject t = obj.get(position);
+
         tvSubSb.setText(t.getName());
         getAvg(t);
         String avg = average + "";
@@ -42,7 +44,7 @@ public class SubjectAdapter extends ArrayAdapter<Subject> {
 
     void getAvg(final Subject t) {
         double sum = 0;
-        int weightSum = 0;
+        double weightSum = 0;
         ArrayList<Grade> grades = FirebaseManager.grades;
         for (Grade grade : grades) {
             if (grade.getSubject().equals(t.getName())) {

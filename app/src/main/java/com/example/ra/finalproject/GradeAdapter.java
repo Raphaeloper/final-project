@@ -28,16 +28,18 @@ public class GradeAdapter extends ArrayAdapter {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater layoutInflater = ((Activity) context).getLayoutInflater();
         View view = layoutInflater.inflate(R.layout.c_layout_gr, parent, false);
+
         TextView tvTitleGr = (TextView) view.findViewById(R.id.tv_title_gr);
         TextView tvSubGr = (TextView) view.findViewById(R.id.tv_sub_gr);
         TextView tvWeightGr = (TextView) view.findViewById(R.id.tv_weight_gr);
         TextView tvMarkGr = (TextView) view.findViewById(R.id.tv_mark_gr);
         TextView tvDateGr = (TextView) view.findViewById(R.id.tv_date_gr);
         Grade t = obj.get(position);
+
         tvTitleGr.setText(t.getTitle());
         tvSubGr.setText(t.getSubject());
         tvWeightGr.setText(t.getWeight() + "%");
-        tvMarkGr.setText(t.getNum()+"");
+        tvMarkGr.setText(t.getNum() + "");
         tvDateGr.setText(getDate(t.getDate()));
         return view;
     }

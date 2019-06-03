@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -18,20 +19,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     FirebaseManager manager;
     EditText etEmail, etPass;
     Button btnLogin, btnSignUp;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
-        manager = FirebaseManager.getInstance(this);
-        etEmail = (EditText) findViewById(R.id.et_email);
-        etPass = (EditText) findViewById(R.id.et_pass);
-        btnLogin = (Button) findViewById(R.id.btn_login);
-        btnSignUp = (Button) findViewById(R.id.btn_signup);
-
-        btnLogin.setOnClickListener(this);
-        btnSignUp.setOnClickListener(this);
-    }
-
+    //allows the user to skip login if he's already logged in
     private FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -43,6 +31,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_login);
+        manager = FirebaseManager.getInstance(this);
+        etEmail = (EditText) findViewById(R.id.et_email);
+        etPass = (EditText) findViewById(R.id.et_pass);
+        btnLogin = (Button) findViewById(R.id.btn_login);
+        btnSignUp = (Button) findViewById(R.id.btn_signup);
+        etPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+        btnLogin.setOnClickListener(this);
+        btnSignUp.setOnClickListener(this);
+    }
 
     public void vibrate() {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -88,6 +90,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         FirebaseManager.auth.addAuthStateListener(authStateListener);
     }
 
+    //prevents the waste of resources
     @Override
     protected void onStop() {
         super.onStop();
